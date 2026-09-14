@@ -1,0 +1,21 @@
+<div class="panel">
+  <h3>AI Candidate Support</h3>
+  <p class="muted" style="margin-top: 0">Ask about this candidate's case, documents, or verification process.</p>
+
+  <div class="chat-history" *ngIf="messages.length">
+    <div class="chat-message" *ngFor="let item of messages" [ngClass]="item.role">
+      <span class="chat-role">{{ item.role === 'user' ? 'You' : 'AI support' }}</span>
+      <p>{{ item.text }}</p>
+    </div>
+    <p class="muted" *ngIf="sending">AI support is preparing a response…</p>
+  </div>
+
+  <form class="chat-form" (ngSubmit)="send()">
+    <textarea [(ngModel)]="message" name="message" maxlength="1000" rows="3"
+      placeholder="Type a question…" [disabled]="sending"></textarea>
+    <button class="btn" type="submit" [disabled]="!message.trim() || sending">
+      {{ sending ? 'Sending…' : 'Ask AI' }}
+    </button>
+  </form>
+  <div class="error" *ngIf="error">{{ error }}</div>
+</div>

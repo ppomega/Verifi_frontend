@@ -1,0 +1,36 @@
+<div class="panel">
+  <h3>Verification Checks</h3>
+
+  <div class="field-row">
+    <div>
+      <label>Check type</label>
+      <select [(ngModel)]="selectedType" name="selectedType">
+        <option *ngFor="let t of verificationTypes" [value]="t">{{ formatLabel(t) }}</option>
+      </select>
+    </div>
+    <button class="btn" [disabled]="adding" (click)="add()">
+      {{ adding ? 'Adding…' : 'Add Check' }}
+    </button>
+  </div>
+
+  <div style="margin-top: 14px">
+    <p class="empty-state" *ngIf="verifications.length === 0">No verification checks added yet.</p>
+    <div class="check-card" *ngFor="let v of verifications">
+      <div class="check-head">
+        <span class="check-type">{{ formatLabel(v.type) }}</span>
+        <span class="stamp" [ngClass]="v.status.toLowerCase()">{{ formatLabel(v.status) }}</span>
+      </div>
+      <label>Status</label>
+      <select [ngModel]="v.status" (ngModelChange)="onStatusChange(v.id, $event)" name="status-{{ v.id }}">
+        <option *ngFor="let s of statuses" [value]="s">{{ formatLabel(s) }}</option>
+      </select>
+      <label>Remarks</label>
+      <textarea
+        rows="2"
+        [ngModel]="v.remarks"
+        name="remarks-{{ v.id }}"
+        (blur)="onRemarksBlur(v.id, $any($event.target).value)"
+      ></textarea>
+    </div>
+  </div>
+</div>

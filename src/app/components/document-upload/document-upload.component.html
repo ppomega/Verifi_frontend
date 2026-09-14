@@ -1,0 +1,52 @@
+<div class="panel">
+  <h3>Documents on File</h3>
+
+  <div class="field-row">
+    <div>
+      <label>Document type</label>
+      <select [(ngModel)]="docType" name="docType">
+        <option *ngFor="let t of documentTypes" [value]="t">{{ formatLabel(t) }}</option>
+      </select>
+    </div>
+    <div style="flex: 2 1 220px">
+      <label>File — pdf, jpg, png, doc, docx, max 20MB</label>
+      <input type="file" (change)="onFileChange($event)" />
+    </div>
+    <button class="btn" [disabled]="!selectedFile || uploading" (click)="upload()">
+      {{ uploading ? 'Uploading…' : 'Upload' }}
+    </button>
+  </div>
+  <div class="error" *ngIf="error">{{ error }}</div>
+
+  <div style="margin-top: 8px">
+    <p class="empty-state" *ngIf="documents.length === 0">No documents uploaded yet.</p>
+    <div class="entry-row" *ngFor="let d of documents">
+      <div>
+        <div style="font-weight: 600">{{ d.originalFileName }}</div>
+        <div class="entry-meta">{{ formatLabel(d.documentType) }} · {{ formatSize(d.fileSizeBytes) }}</div>
+      </div>
+      <div style="display: flex; gap: 8px">
+        <button class="btn ghost small" *ngIf="supportsExtraction(d)" [disabled]="extractingDocumentId !== null" (click)="extract(d.id)">
+          {{ extractingDocumentId === d.id ? 'Extracting…' : 'Extract with AI' }}
+        </button>
+        <a class="btn ghost small" [href]="downloadUrl(d.id)">Download</a>
+        <button class="btn danger small" [disabled]="deletingDocumentId !== null" (click)="remove(d.id)">
+          {{ deletingDocumentId === d.id ? 'Deleting…' : 'Delete' }}
+        </button>
+      </div>
+      <div class="extraction-result" *ngIf="extractions[d.id] as extraction">
+      <div class="entry-meta">
+        AI extraction: <span class="stamp" [ngClass]="extraction.status.toLowerCase()">{{ formatLabel(extraction.status) }}</span>
+        <span *ngIf="extraction.confidence !== null && extraction.confidence !== undefined"> · {{ extraction.confidence * 100 | number:'1.0-0' }}% confidence</span>
+      </div>
+      <p class="error" *ngIf="extraction.status === 'FAILED'">{{ extraction.errorMessage || 'AI extraction failed.' }}</p>
+      <dl *ngIf="extraction.status === 'COMPLETED' && extractionEntries(d.id).length">
+        <ng-container *ngFor="let field of extractionEntries(d.id)">
+          <dt>{{ field.label }}</dt><dd>{{ field.value }}</dd>
+        </ng-container>
+      </dl>
+      </div>
+    </div>
+  </div>
+  <div class="error" *ngIf="extractionError">{{ extractionError }}</div>
+</div>

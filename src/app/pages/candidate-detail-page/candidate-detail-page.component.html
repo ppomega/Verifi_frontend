@@ -1,0 +1,40 @@
+<p class="empty-state" *ngIf="loading">Loading case file…</p>
+
+<ng-container *ngIf="!loading">
+  <p class="error" *ngIf="!candidate">Candidate not found.</p>
+
+  <ng-container *ngIf="candidate">
+    <a routerLink="/" class="link-btn">&larr; Back to Case Register</a>
+
+    <div class="panel" style="margin-top: 16px">
+      <div class="panel-title-row">
+        <div>
+          <div class="case-id">{{ caseId(candidate.id) }}</div>
+          <h2>{{ candidate.fullName }}</h2>
+        </div>
+        <span class="stamp" [ngClass]="candidate.status.toLowerCase()">{{ formatLabel(candidate.status) }}</span>
+      </div>
+      <p class="muted" style="margin-top: 10px">
+        {{ candidate.email }} · {{ candidate.phone || 'no phone on file' }}
+      </p>
+      <p class="muted">Position: {{ candidate.positionAppliedFor || 'not specified' }}</p>
+    </div>
+
+    <div class="divider-label">Documentation</div>
+    <app-document-upload
+      [candidateId]="candidateId"
+      [documents]="documents"
+      (changed)="loadAll()"
+    ></app-document-upload>
+
+    <div class="divider-label">Checks</div>
+    <app-verification-panel
+      [candidateId]="candidateId"
+      [verifications]="verifications"
+      (changed)="loadAll()"
+    ></app-verification-panel>
+
+    <div class="divider-label">Support</div>
+    <app-candidate-chat [candidateId]="candidateId"></app-candidate-chat>
+  </ng-container>
+</ng-container>

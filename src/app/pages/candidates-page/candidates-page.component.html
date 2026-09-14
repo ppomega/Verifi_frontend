@@ -1,0 +1,53 @@
+<div class="section-head">
+  <h2>Case Register</h2>
+  <button class="btn" (click)="toggleForm()">
+    {{ showForm ? 'Cancel' : '+ Open New Case' }}
+  </button>
+</div>
+
+<form class="panel" *ngIf="showForm" (ngSubmit)="submit()">
+  <h3>New Candidate</h3>
+  <div class="field-row">
+    <div>
+      <label>Full name</label>
+      <input [(ngModel)]="fullName" name="fullName" required />
+    </div>
+    <div>
+      <label>Email</label>
+      <input type="email" [(ngModel)]="email" name="email" required />
+    </div>
+  </div>
+  <div class="field-row">
+    <div>
+      <label>Phone</label>
+      <input [(ngModel)]="phone" name="phone" />
+    </div>
+    <div>
+      <label>Position applied for</label>
+      <input [(ngModel)]="position" name="position" />
+    </div>
+  </div>
+  <div class="error" *ngIf="error">{{ error }}</div>
+  <div style="margin-top: 16px">
+    <button class="btn" type="submit" [disabled]="submitting">
+      {{ submitting ? 'Saving…' : 'Create Candidate' }}
+    </button>
+  </div>
+</form>
+
+<div class="panel">
+  <p class="empty-state" *ngIf="loading">Loading cases…</p>
+  <p class="empty-state" *ngIf="!loading && candidates.length === 0">
+    No cases yet. Open a new case to get started.
+  </p>
+  <div class="entry-row" *ngFor="let c of candidates">
+    <div>
+      <div class="case-id">{{ caseId(c.id) }}</div>
+      <a [routerLink]="['/candidates', c.id]" class="entry-link">{{ c.fullName }}</a>
+      <div class="entry-meta">
+        {{ c.email }} · {{ c.positionAppliedFor || 'position not specified' }}
+      </div>
+    </div>
+    <span class="stamp" [ngClass]="c.status.toLowerCase()">{{ formatLabel(c.status) }}</span>
+  </div>
+</div>
